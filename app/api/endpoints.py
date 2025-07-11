@@ -43,7 +43,7 @@ async def extractData(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="Failed to extract file content. Please check file integrity.")
 
         # Handle large content by chunking
-        contentChunks = FileHandler.split_content_for_model(extracted_content, max_length=8000)
+        contentChunks = FileHandler.split_content_for_model(extracted_content, max_length=10000)
         from app.services.langchain_utils import run_langchain_chain
         langchainResults = []
         for chunk in contentChunks:  # Each chunk is a portion of the extracted content

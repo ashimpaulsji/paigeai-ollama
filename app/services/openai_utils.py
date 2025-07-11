@@ -24,9 +24,8 @@ def extract_invoice_fields_with_openai(text):
         raise Exception("OpenAI API key not found.")
     client = openai.OpenAI(api_key=api_key)
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
+        model="o3-mini-2025-01-31",
+        messages=[{"role": "user", "content": prompt}]
     )
     try:
         content = response.choices[0].message.content.strip()
@@ -38,10 +37,10 @@ def extract_invoice_fields_with_openai(text):
             if k not in data:
                 data[k] = ""
                 print(f"Missing field in OpenAI response: {k}")
-                    
         print(f"OpenAI response: {data}")  # Debugging line
         return data
-    except Exception:
+    except Exception as e:
+        print(f"Failed to parse OpenAI response as JSON. Raw content: {content}. Error: {e}")
         return {
             "cust_name": "", "cust_invoice_no": "", "cust_invoice_amount": "", "cust_invoice_due_date": "", "cust_invoice_type": "PDF",
             "cust_phone": "", "cust_email": "", "cust_billing_address": "", "shipping_address": "", "cust_billing_city": "", "billing_country": ""

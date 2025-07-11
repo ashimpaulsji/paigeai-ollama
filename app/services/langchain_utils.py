@@ -2,6 +2,7 @@ import logging
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from app.core.config import settings
+import langgraph
 
 logger = logging.getLogger("langchain_utils")
 
@@ -77,7 +78,7 @@ You will be provided with CSV content as plain text (decoded from a base64-encod
 
 def get_langchain_llm():
     try:
-        return ChatOpenAI(model="gpt-4", api_key=settings.OPENAI_API_KEY)
+        return ChatOpenAI(model="gpt-4.1", api_key=settings.OPENAI_API_KEY)
     except Exception as e:
         logger.error(f"Failed to initialize ChatOpenAI: {e}")
         raise
@@ -100,4 +101,16 @@ def run_langchain_chain(text: str) -> list:
         return json.loads(content)
     except Exception as e:
         logger.error(f"LangChain chain invocation failed: {e}")
+        raise
+
+def run_langgraph_chain(text: str) -> list:
+    from langgraph.llms import OpenAI
+    import json
+    llm = OpenAI(model="gpt-4.1", api_key=settings.OPENAI_API_KEY)
+    prompt = get_prompt_template().format(text=text)
+    try:
+        result = llm(prompt)
+        return json.loads(result)
+    except Exception as e:
+        logger.error(f"LangGraph chain invocation failed: {e}")
         raise
